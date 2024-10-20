@@ -38,7 +38,7 @@
         {{#if empName}}
             <div>Employee: {{empName}}</div>
         {{/if}}
-            <div>Timecards Available: {{totalTimecardCount}}</div>
+        <div>Timecards Available: {{totalTimecardCount}}</div>
         <div
             class="grid grid-cols-2 md:grid-cols-5 items-center justify-between justify-items-center h-12 px-3 font-bold  ">
             <span class="truncate">Date Submitted</span>
@@ -65,13 +65,15 @@
                 <span class="truncate ">{{empName}}</span>
                 <span class="hidden md:inline-grid truncate">{{hoursCount}}</span>
                 <span class="hidden md:inline-grid truncate">{{overtimeCount}}</span>
-                <span class="truncate grid grid-cols-2 gap-1">
+                <span class="truncate grid grid-cols-3 gap-1">
                     <a class="mx-4" href="/admin/edit/{{this.id}}">
                         <i class="fa-solid fa-pencil"></i>
                     </a>
-                    <label for="delete-timecard-{{@index}}" class="mx-2" id="open-delete-timecard-modal" data-id="{{this.id}}">
-                        <i class="fa-solid fa-trash"></i>
-                        </>
+                    <label for="delete-timecard-{{@index}}" class="mx-2" id="open-delete-timecard-modal"
+                        data-id="{{this.id}}">
+                        <i class="fa-solid fa-trash"></i></label>
+                    <div class="mx-2"><i class="fa-solid fa-print" id="print-timecard-{{@index}}" data-id="{{id}}"></i>
+                    </div>
                 </span>
             </div>
             <div class="max-h-0 overflow-hidden duration-300 group-focus:bg-zinc-500 group-focus:max-h-96">
@@ -102,19 +104,22 @@
         <ul class="flex flex-wrap items-center md:mr-4 mr-0 justify-evenly overflow-hidden  gap-3 mb-4">
             {{#gt pagination.page 1}}
                 {{#paginate pagination type="previous"}}
-                    <div class="col-auto"><a href="{{#if @root.empName}}?empName={{@root.empName}}{{/if}}{{#if @root.week}}?week={{@root.week}}{{/if}}&p={{n}}"><button class="btn"><i
-                                    class="fa-solid fa-arrow-left"></i></button></a></div>
+                    <div class="col-auto"><a
+                            href="{{#if @root.empName}}?empName={{@root.empName}}{{/if}}{{#if @root.week}}?week={{@root.week}}{{/if}}&p={{n}}"><button
+                                class="btn"><i class="fa-solid fa-arrow-left"></i></button></a></div>
                 {{/paginate}}
             {{/gt}}
             {{#paginate pagination type="middle" limit="3"}}
-                <div class="{{#if active}}active{{/if}} col"><a href="{{#if @root.empName}}?empName={{@root.empName}}{{/if}}{{#if @root.week}}?week={{@root.week}}{{/if}}&p={{n}}"><button
+                <div class="{{#if active}}active{{/if}} col"><a
+                        href="{{#if @root.empName}}?empName={{@root.empName}}{{/if}}{{#if @root.week}}?week={{@root.week}}{{/if}}&p={{n}}"><button
                             class="btn">{{n}}</button></a>
                 </div>
             {{/paginate}}
             {{#lt pagination.page pagination.pageCount}}
                 {{#paginate pagination type="next"}}
-                    <div class="col-auto"><a href="{{#if @root.empName}}?empName={{@root.empName}}{{/if}}{{#if @root.week}}?week={{@root.week}}{{/if}}&p={{n}}"><button class="btn"><i
-                                    class="fa-solid fa-arrow-right"></i></button></a></div>
+                    <div class="col-auto"><a
+                            href="{{#if @root.empName}}?empName={{@root.empName}}{{/if}}{{#if @root.week}}?week={{@root.week}}{{/if}}&p={{n}}"><button
+                                class="btn"><i class="fa-solid fa-arrow-right"></i></button></a></div>
                 {{/paginate}}
             {{/lt}}
         </ul>
@@ -133,5 +138,62 @@
             <p class="mt-4"><label class="btn btn-secondary" for="delete-timecard-{{@index}}">Cancel</label></p>
         </div>
         <label class="modal-backdrop" for="delete-timecard-{{@index}}">Close</label>
+    </div>
+    {{!-- Printable report HTML Staging --}}
+    <div class="hidden" id="timecard-{{id}}">
+        <div style="padding: 1%; border: solid 1px black; max-width:700px; font-family: arial,helvetica; font-size: 14px; color:#000000; background-color:#FFFFFF;"
+            align="center">
+            <div style="font-size:6px; line-height:10px; padding:0px 0px 0px 0px;" valign="center" align="center"><a
+                    href="http://tk-api.prod.ado.software/img/logo.png">
+                    <img class="max-width" border="0"
+                        style="display:block; color:#000000; text-decoration:none; font-family:Helvetica, arial, sans-serif; font-size:16px; max-width:30% !important; width:25%; height:auto !important;"
+                        width="300" alt="Timekeeper Logo" data-proportionally-constrained="true" data-responsive="true"
+                        src="/img/logo.png"></a>
+            </div>
+            <br>
+            <div style="font-family: inherit; text-align: center">A timecard was submitted by {{empName}}.&nbsp;</div>
+            <div style="font-family: inherit; text-align: inherit"><br>
+                <table border="2"
+                    style="border-collapse:collapse; cellpadding:2; cellspacing:1; text-align:center; width:100%; data-type:columns; bgcolor:#dcdcdc">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Job Name</th>
+                            <th>Job Numbers</th>
+                            <th>Hours</th>
+                            <th>Overtime</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each timeEntries}}
+                            {{#if this.jobName}}
+                                <tr>
+                                    <td>{{formatDate this.date}}</td>
+                                    <td>{{this.jobName}}</td>
+                                    <td>{{this.jobNum}}</td>
+                                    <td>{{this.hours}}</td>
+                                    <td>{{this.overtime}}</td>
+                                </tr>
+                            {{/if}}
+                        {{/each}}
+                        <tr style="background: rgba(100, 100, 100, 0.5)">
+                            <td>Totals</td>
+                            <td></td>
+                            <td></td>
+                            <td><b>Total Hours:</b> </td>
+                            <td><b>OT Hours: </b></td>
+                        </tr>
+                        <tr>
+                            <td><b>Entries:</b></td>
+                            <td>{{punchCount}}</td>
+                            <td></td>
+                            <td>{{hoursCount}}</td>
+                            <td>{{overtimeCount}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="text-align: center; font-size: 6pt;">{{sourceURL}}</p>
+            </div>
+        </div>
     </div>
 {{/each}}
