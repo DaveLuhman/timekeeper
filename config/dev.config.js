@@ -21,7 +21,7 @@ const helmetCSP = helmet.contentSecurityPolicy({
       "'self'",
       'ajax.googleapis.com',
       'cdn.jsdelivr.net',
-      'unsafe-inline',
+      `'unsafe-inline'`,
     ],
     'connect-src': ['*.ado.software', 'timekeeper.site', "'self'"],
   },
