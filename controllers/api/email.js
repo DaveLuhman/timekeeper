@@ -47,7 +47,7 @@ export const sendEmail = async ({ to, subject, emailHtml }) => {
 			host: "mail.smtp2go.com", // SMTP2GO server
 			port: 587, // Use port 587 for TLS
 			auth: {
-				pass: "IY0IHQW386kleo7Y", // Replace with your SMTP2GO username
+				pass: process.env.S2G_API_KEY, // Replace with your SMTP2GO username
 				user: "adosoftware", // Replace with your SMTP2GO password
 			},
 		});
