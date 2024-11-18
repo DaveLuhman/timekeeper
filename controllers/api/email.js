@@ -66,12 +66,10 @@ export const sendEmail = async ({ to, subject, emailHtml }) => {
 				if (error) {
 					console.log(error);
 				} else {
-					console.log(`Message sent: ${response.messageId}`);
+					return console.log(`Email ${response.messageId} sent successfully via SMTP2GO`);
 				}
 			},
 		);
-
-		return console.log("Email sent successfully via SMTP2GO");
 	} catch (error) {
 		throw new Error("Error sending email:", error.message);
 	}
