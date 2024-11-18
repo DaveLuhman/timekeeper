@@ -11,7 +11,7 @@ function openInNewTab(timecardId) {
 
 if (document.getElementsByClassName("fa-print").length > 0) {
 	const printButtons = document.getElementsByClassName("fa-print");
-	for (let button of printButtons) {
+	for (const button of printButtons) {
 		button.addEventListener("click", () => {
 			openInNewTab(button.dataset.id);
 		});

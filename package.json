@@ -47,6 +47,7 @@
     "mongoose-autopopulate": "^1.1.0",
     "morgan": "^1.10.0",
     "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.16",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
