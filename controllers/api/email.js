@@ -14,7 +14,8 @@ export const renderEmailTemplate = async (doc) => {
 	try {
 		const { empName, sourceURL } = doc;
 
-		const to = setEmailTarget(sourceURL);
+		const to = [setEmailTarget(sourceURL)]
+		if(doc.empEmail) to.push(doc.empEmail);
 		const subject = `Timecard Submitted By ${empName}`;
 		// Construct the path to the Handlebars template file
 		const templatePath = path.resolve("./views/email/timecardEmail.hbs");
