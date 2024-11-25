@@ -2,7 +2,7 @@
 const content = [
   './views/**/*.{hbs,js}',
   './public/**/*.{hbs,js}',
-  './node_modules/flowbite/**/*.js',
+
 ]
 const mode = 'jit'
 const daisyui = {
@@ -44,7 +44,6 @@ const plugins = [
   require('@tailwindcss/typography'),
   require('@tailwindcss/forms'),
   require('daisyui'),
-  require('flowbite'),
 ]
 
 export default {

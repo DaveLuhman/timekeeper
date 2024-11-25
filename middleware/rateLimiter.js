@@ -2,6 +2,7 @@ import Customer from '../models/customer.js'
 import Timecard from '../models/timecard.js'
 import { Error } from 'mongoose' // Add the missing import statement for the Error class
 
+
 function getRootDomain(url) {
   return String(url.substring(5))
 }
@@ -28,7 +29,7 @@ async function getThisMonthsEntriesBySourceURL(hostname) {
   try {
     const entries = await Timecard.getThisMonths()
     const filteredEntries = entries.filter((entry) => {
-      return entry.sourceURL == hostname
+      return entry.sourceURL === hostname
     })
     return filteredEntries
   } catch (err) {
@@ -72,7 +73,7 @@ async function identifyOrCreateCustomer(hostname) {
  */
 async function checkEntriesCountAgainstPaymentTier(customer, hostname) {
   let entriesLimit = new Number()
-  let entries = await getThisMonthsEntriesBySourceURL(hostname)
+  const entries = await getThisMonthsEntriesBySourceURL(hostname)
   console.log(
     `${JSON.stringify(customer)} has submitted ${
       entries.length
