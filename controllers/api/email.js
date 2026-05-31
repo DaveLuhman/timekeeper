@@ -7,12 +7,16 @@ import { formatDate } from '../../helpers/index.js';
 handlebars.registerHelper("formatDate", formatDate);
 export function setEmailTarget(sourceURL) {
 	try {
-		return process.env.TO_EMAIL === undefined
-		? `time@${sourceURL.substring(5)}`.blue.bold
-		: process.env.TO_EMAIL.blue.bold;
+		if (process.env.TO_EMAIL !== undefined) {
+			return process.env.TO_EMAIL
+		}
+		return `time@${sourceURL.substring(5)}`
 	} catch (error) {
 		console.log(`[EMAIL] Error setting email target: ${error.message}`.red.bold)
-		return process.env.TO_EMAIL.blue.bold;
+		if (process.env.TO_EMAIL !== undefined) {
+			return process.env.TO_EMAIL
+		}
+		throw error
 	}
 }
 // Middleware to render the Handlebars template

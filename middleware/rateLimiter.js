@@ -1,4 +1,3 @@
-import { Error as MongooseError } from 'mongoose'
 import Customer from '../models/customer.js'
 import Timecard from '../models/timecard.js'
 
@@ -6,11 +5,11 @@ function getRootDomain(url) {
   return url.substring(5)
 }
 function confirmTimeSubdomain(hostname) {
-  if (hostname.substring(0, 5) !== 'time.')
-    return new MongooseError(
+  if (hostname.substring(0, 5) !== 'time.') {
+    throw new Error(
       'Invalid Source. Requests must come from time.domain.tld URL'
     )
-  return
+  }
 }
 /**
  * Retrieves this month's entries and filters them by the hostname.
@@ -35,7 +34,7 @@ async function getThisMonthsEntriesBySourceURL(hostname) {
  */
 async function identifyOrCreateCustomer(hostname) {
   // gets customer record from MongoDB or creates one if none exists
-  await confirmTimeSubdomain(hostname) //throws error if req not from time.* url
+  confirmTimeSubdomain(hostname) // throws if req not from time.* url
   return (
     (await Customer.findOne({
       rootDomain: { $eq: getRootDomain(hostname) },
@@ -94,7 +93,7 @@ const rateLimiter = async function rateLimiterWrapper(req, res, next) {
     await checkEntriesCountAgainstPaymentTier(customer, hostname)
     next()
   } catch (err) {
-    res.status(429).send(err.message)
+    return res.status(429).send(err.message)
   }
 }
 

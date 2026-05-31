@@ -186,12 +186,12 @@ export async function executeResetPasswordRequest(req, res ) {
   const user = await User.findByToken(token)
   if (!user || user.tokenExpiry < Date.now()) {
     req.flash('error', 'Password reset token is invalid or has expired.')
-    res.redirect('/auth/login')
+    return res.redirect('/auth/login')
   }
   const { password, confirmPassword } = req.body
   if (password !== confirmPassword) {
     req.flash('error', 'Passwords do not match')
-    res.redirect(`/auth/forgotPassword/${token}`)
+    return res.redirect(`/auth/forgotPassword/${token}`)
   }
   user.password = await hash(password, 10)
   user.token = undefined
