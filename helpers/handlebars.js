@@ -30,6 +30,9 @@ export const handlebarsHelpers = {
   minus(a, b) {
     return Number(a) - Number(b)
   },
+  add(a, b) {
+    return Number(a) + Number(b)
+  },
   encodeURI(value) {
     return encodeURIComponent(String(value ?? ''))
   },
@@ -37,6 +40,10 @@ export const handlebarsHelpers = {
     return JSON.stringify(value)
   },
   moment(value, format) {
+    if (!value) return ''
+    return moment(value).format(String(format ?? ''))
+  },
+  date(value, format) {
     if (!value) return ''
     return moment(value).format(String(format ?? ''))
   },

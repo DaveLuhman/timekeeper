@@ -5,31 +5,44 @@
         {{#if week}}
             <div class="flex justify-center justify-items-center pt-3">
                 {{#eq week 1}}
-                    <a class="px-2 mx-1" href="/admin/?week=52">
+                    <a class="px-2 mx-1" href="/admin/?week=52&year={{year}}">
                         <i class="fa-solid fa-arrow-left"></i>
                     </a>
         {{else}}
-            <a class="px-2 mx-1" href="/admin/?week={{minus week 1}}">
+            <a class="px-2 mx-1" href="/admin/?week={{minus week 1}}&year={{year}}">
                 <i class="fa-solid fa-arrow-left"></i>
             </a>
                 {{/eq}}
-                <details class="dropdown bg-inherit ">
-                    <summary class="btn-sm rounded-btn bg-base-200">Week:{{week}}</summary>
-                    <ul
-                        class="border-e max-h-[125px] md:max-h-[300px] p-2 w-max shadow-xl menu dropdown-content z-[1] rounded-box bg-base-200">
-                        {{#each weeks}}
-                            <li class="border-e m-0.5 border-stone-600 border-collapse bg-base-100 rounded-btn">
-                                <a href="/admin/?week={{this}}"> {{this}}</a>
-                            </li>
-                        {{/each}}
-                    </ul>
-                </details>
+                <div class="flex gap-2">
+                    <details class="dropdown bg-inherit ">
+                        <summary class="btn-sm rounded-btn bg-base-200">Week:{{week}}</summary>
+                        <ul
+                            class="border-e max-h-[125px] md:max-h-[300px] p-2 w-max shadow-xl menu dropdown-content z-[1] rounded-box bg-base-200">
+                            {{#each weeks}}
+                                <li class="border-e m-0.5 border-stone-600 border-collapse bg-base-100 rounded-btn">
+                                    <a href="/admin/?week={{this}}&year={{../year}}"> {{this}}</a>
+                                </li>
+                            {{/each}}
+                        </ul>
+                    </details>
+                    <details class="dropdown bg-inherit ">
+                        <summary class="btn-sm rounded-btn bg-base-200">Year:{{year}}</summary>
+                        <ul
+                            class="border-e max-h-[125px] md:max-h-[300px] p-2 w-max shadow-xl menu dropdown-content z-[1] rounded-box bg-base-200">
+                            {{#each years}}
+                                <li class="border-e m-0.5 border-stone-600 border-collapse bg-base-100 rounded-btn">
+                                    <a href="/admin/?week={{../week}}&year={{this}}"> {{this}}</a>
+                                </li>
+                            {{/each}}
+                        </ul>
+                    </details>
+                </div>
                 {{#eq week 52}}
-                    <a class="px-2 mx-1" href="/admin/?week=1">
+                    <a class="px-2 mx-1" href="/admin/?week=1&year={{year}}">
                         <i class="fa-solid fa-arrow-right"></i>
                     </a>
         {{else}}
-            <a class="px-2 mx-1" href="/admin/?week={{add week 1}}">
+            <a class="px-2 mx-1" href="/admin/?week={{add week 1}}&year={{year}}">
                 <i class="fa-solid fa-arrow-right"></i>
             </a>
                 {{/eq}}
@@ -105,20 +118,20 @@
             {{#gt pagination.page 1}}
                 {{#paginate pagination type="previous"}}
                     <div class="col-auto"><a
-                            href="{{#if @root.empName}}?empName={{@root.empName}}{{/if}}{{#if @root.week}}?week={{@root.week}}{{/if}}&p={{n}}"><button
+                            <a href="/admin/?p={{n}}{{#if @root.empName}}&empName={{@root.empName}}{{/if}}{{#if @root.week}}&week={{@root.week}}{{/if}}{{#if @root.year}}&year={{@root.year}}{{/if}}">><button
                                 class="btn"><i class="fa-solid fa-arrow-left"></i></button></a></div>
                 {{/paginate}}
             {{/gt}}
             {{#paginate pagination type="middle" limit="3"}}
                 <div class="{{#if active}}active{{/if}} col"><a
-                        href="{{#if @root.empName}}?empName={{@root.empName}}{{/if}}{{#if @root.week}}?week={{@root.week}}{{/if}}&p={{n}}"><button
+                        <a href="/admin/?p={{n}}{{#if @root.empName}}&empName={{@root.empName}}{{/if}}{{#if @root.week}}&week={{@root.week}}{{/if}}{{#if @root.year}}&year={{@root.year}}{{/if}}">><button
                             class="btn">{{n}}</button></a>
                 </div>
             {{/paginate}}
             {{#lt pagination.page pagination.pageCount}}
                 {{#paginate pagination type="next"}}
                     <div class="col-auto"><a
-                            href="{{#if @root.empName}}?empName={{@root.empName}}{{/if}}{{#if @root.week}}?week={{@root.week}}{{/if}}&p={{n}}"><button
+                            <a href="/admin/?p={{n}}{{#if @root.empName}}&empName={{@root.empName}}{{/if}}{{#if @root.week}}&week={{@root.week}}{{/if}}{{#if @root.year}}&year={{@root.year}}{{/if}}">><button
                                 class="btn"><i class="fa-solid fa-arrow-right"></i></button></a></div>
                 {{/paginate}}
             {{/lt}}
