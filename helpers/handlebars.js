@@ -30,6 +30,9 @@ export const handlebarsHelpers = {
   minus(a, b) {
     return Number(a) - Number(b)
   },
+  add(a, b) {
+    return Number(a) + Number(b)
+  },
   encodeURI(value) {
     return encodeURIComponent(String(value ?? ''))
   },

@@ -1,13 +1,19 @@
-import nodemailer from "nodemailer";
-import handlebars from "handlebars";
 import fs from "node:fs/promises";
-import path from "path";
+import path from "node:path";
+import handlebars from "handlebars";
+import nodemailer from "nodemailer";
 import { formatDate } from '../../helpers/index.js';
+
 handlebars.registerHelper("formatDate", formatDate);
 export function setEmailTarget(sourceURL) {
-	return process.env.TO_EMAIL === undefined
-		? `time@${sourceURL.substring(5)}`
-		: process.env.TO_EMAIL;
+	try {
+		return process.env.TO_EMAIL === undefined
+		? `time@${sourceURL.substring(5)}`.blue.bold
+		: process.env.TO_EMAIL.blue.bold;
+	} catch (error) {
+		console.log(`[EMAIL] Error setting email target: ${error.message}`.red.bold)
+		return process.env.TO_EMAIL.blue.bold;
+	}
 }
 // Middleware to render the Handlebars template
 export const renderEmailTemplate = async (doc) => {
