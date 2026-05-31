@@ -1,23 +1,16 @@
+import { Error as MongooseError } from 'mongoose'
 import Customer from '../models/customer.js'
 import Timecard from '../models/timecard.js'
-// biome-ignore lint/suspicious/noShadowRestrictedNames: <explanation>
-import { Error } from 'mongoose' // Add the missing import statement for the Error class
-
 
 function getRootDomain(url) {
-  return String(url.substring(5))
+  return url.substring(5)
 }
 function confirmTimeSubdomain(hostname) {
-  try {
-    if (hostname.substring(0, 5) !== 'time.') {
-      return new Error(
-        'Invalid Source. Requests must come from time.domain.tld URL'
-      )
-    }
-    return
-  } catch (err) {
-    return err.message
-  }
+  if (hostname.substring(0, 5) !== 'time.')
+    return new MongooseError(
+      'Invalid Source. Requests must come from time.domain.tld URL'
+    )
+  return
 }
 /**
  * Retrieves this month's entries and filters them by the hostname.
@@ -28,14 +21,8 @@ function confirmTimeSubdomain(hostname) {
  */
 async function getThisMonthsEntriesBySourceURL(hostname) {
   // gets this months entries and filters them by the hostname
-  try {
-    const entries = await Timecard.getThisMonths()
-    return entries.filter((entry) => {
-          return entry.sourceURL === hostname
-        });
-  } catch (err) {
-    return err.message
-  }
+  const entries = await Timecard.getThisMonths()
+  return entries.filter((entry) => entry.sourceURL === hostname)
 }
 
 /**
@@ -48,22 +35,16 @@ async function getThisMonthsEntriesBySourceURL(hostname) {
  */
 async function identifyOrCreateCustomer(hostname) {
   // gets customer record from MongoDB or creates one if none exists
-  try {
-    let customer = undefined //init customer variable mutably
-    confirmTimeSubdomain(hostname) //throws error if req not from time.* url
-    customer = await Customer.findOne({
+  await confirmTimeSubdomain(hostname) //throws error if req not from time.* url
+  return (
+    (await Customer.findOne({
       rootDomain: { $eq: getRootDomain(hostname) },
-    }) // find the customer if they exist in the db
-    if (!customer) {
-      customer = await Customer.create({
-        rootDomain: getRootDomain(hostname),
-        paymentTier: 0,
-      }) //create new customer in DB with req's hostname, trimmed for 'time.'
-    }
-    return customer
-  } catch (err) {
-    return err.message
-  }
+    })) ||
+    (await Customer.create({
+      rootDomain: getRootDomain(hostname),
+      paymentTier: 0,
+    }))
+  ) // find the customer if they exist in the db or create a new one
 }
 /**
  * Checks the number of entries against the payment tier limit for a customer.
@@ -73,12 +54,10 @@ async function identifyOrCreateCustomer(hostname) {
  * @returns {Promise<void>} A promise that resolves with no value.
  */
 async function checkEntriesCountAgainstPaymentTier(customer, hostname) {
-  let entriesLimit = Number()
+  let entriesLimit = 0
   const entries = await getThisMonthsEntriesBySourceURL(hostname)
   console.log(
-    `${JSON.stringify(customer)} has submitted ${
-      entries.length
-    } time entries this month.`
+    `${JSON.stringify(customer)} has submitted ${entries.length} time entries this month.`
   )
   switch (customer.paymentTier) {
     case 0: // limit to 10 reports per month
@@ -115,7 +94,7 @@ const rateLimiter = async function rateLimiterWrapper(req, res, next) {
     await checkEntriesCountAgainstPaymentTier(customer, hostname)
     next()
   } catch (err) {
-    return res.status(429).send(err.message)
+    res.status(429).send(err.message)
   }
 }
 

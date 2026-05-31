@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import { weeklyDayShift } from '../middleware/util.js'
 import indexController from '../controllers/index.js'
+import { weeklyDayShift } from '../middleware/util.js'
 
 /**
  * Express router for the index routes.

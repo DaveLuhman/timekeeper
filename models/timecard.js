@@ -22,54 +22,54 @@
  * @typedef {Model<Timecard>} TimecardModel
  */
 
-import { Schema, model } from 'mongoose'
-import mongooseAutoPopulate from 'mongoose-autopopulate'
-import moment from 'moment'
-import User from './user.js'
+import moment from "moment";
+import { model, Schema } from "mongoose";
+import mongooseAutoPopulate from "mongoose-autopopulate";
+import User from "./user.js";
 
 const timecardSchema = new Schema(
-  {
-    archived: {
-      type: Boolean,
-      default: false,
-    },
-    empName: {
-      type: String,
-    },
-    empEmail: {
-      type: String,
-      lowercase: true,
-    },
-    timeEntries: [
-      {
-        date: Date,
-        jobName: String,
-        jobNum: String,
-        hours: Number,
-        overtime: Number,
-      },
-    ],
-    sourceURL: {
-      type: String,
-      required: false,
-    },
-    hoursCount: Number,
-    overtimeCount: Number,
-    punchCount: Number,
-  },
-  {
-    timestamps: true,
-    toObject: { virtuals: true },
-    toJSON: { virtuals: true },
-    strict: false,
-  }
-)
+	{
+		archived: {
+			type: Boolean,
+			default: false,
+		},
+		empName: {
+			type: String,
+		},
+		empEmail: {
+			type: String,
+			lowercase: true,
+		},
+		timeEntries: [
+			{
+				date: Date,
+				jobName: String,
+				jobNum: String,
+				hours: Number,
+				overtime: Number,
+			},
+		],
+		sourceURL: {
+			type: String,
+			required: false,
+		},
+		hoursCount: Number,
+		overtimeCount: Number,
+		punchCount: Number,
+	},
+	{
+		timestamps: true,
+		toObject: { virtuals: true },
+		toJSON: { virtuals: true },
+		strict: false,
+	},
+);
 
-timecardSchema.plugin(mongooseAutoPopulate)
+timecardSchema.plugin(mongooseAutoPopulate);
 
-timecardSchema.virtual('week').get(function () {
-  return moment(this.timeEntries[0].date).locale('US').week()
-})
+timecardSchema.virtual("week").get(function () {
+	return moment(this.timeEntries[0].date).locale("US").week();
+});
 
 /**
  * Retrieves all timecards created today.
@@ -77,12 +77,12 @@ timecardSchema.virtual('week').get(function () {
  * @function getTodays
  * @returns {Promise<Array<Timecard>>} - A promise that resolves to an array of timecards created today.
  */
-timecardSchema.static('getTodays', async function () {
-  const todaysTimecards = await model('Timecard')
-    .find({ createdAt: { $gte: moment().startOf('day') } })
-    .sort('empName')
-  return todaysTimecards
-})
+timecardSchema.static("getTodays", async () => {
+	const todaysTimecards = await model("Timecard")
+		.find({ createdAt: { $gte: moment().startOf("day") } })
+		.sort("empName");
+	return todaysTimecards;
+});
 
 /**
  * Retrieves all timecards created in the current week.
@@ -90,15 +90,15 @@ timecardSchema.static('getTodays', async function () {
  * @function getThisWeeks
  * @returns {Promise<Array<Timecard>>} - A promise that resolves to an array of timecards created in the current week.
  */
-timecardSchema.static('getThisWeeks', async function () {
-  const thisWeek = moment().locale('US').week()
-  const thisYearsTimecards = await model('Timecard').find()
-  const thisWeeksTimecards = []
-  thisYearsTimecards.map((document) => {
-    if (document.week === thisWeek) thisWeeksTimecards.push(document)
-  })
-  return thisWeeksTimecards
-})
+timecardSchema.static("getThisWeeks", async () => {
+	const thisWeek = moment().locale("US").week();
+	const thisYearsTimecards = await model("Timecard").find();
+	const thisWeeksTimecards = [];
+	thisYearsTimecards.map((document) => {
+		if (document.week === thisWeek) thisWeeksTimecards.push(document);
+	});
+	return thisWeeksTimecards;
+});
 
 /**
  * Retrieves all timecards created in the previous week.
@@ -106,15 +106,15 @@ timecardSchema.static('getThisWeeks', async function () {
  * @function getLastWeeks
  * @returns {Promise<Array<Timecard>>} - A promise that resolves to an array of timecards created in the previous week.
  */
-timecardSchema.static('getLastWeeks', async function () {
-  const thisWeek = moment().locale('US').week()
-  const thisYearsTimecards = await model('Timecard').find()
-  const lastWeeksTimecards = []
-  thisYearsTimecards.map((document) => {
-    if (document.week === thisWeek - 1) lastWeeksTimecards.push(document)
-  })
-  return lastWeeksTimecards
-})
+timecardSchema.static("getLastWeeks", async () => {
+	const thisWeek = moment().locale("US").week();
+	const thisYearsTimecards = await model("Timecard").find();
+	const lastWeeksTimecards = [];
+	thisYearsTimecards.map((document) => {
+		if (document.week === thisWeek - 1) lastWeeksTimecards.push(document);
+	});
+	return lastWeeksTimecards;
+});
 
 /**
  * Retrieves all timecards created in the current month.
@@ -122,12 +122,12 @@ timecardSchema.static('getLastWeeks', async function () {
  * @function getThisMonths
  * @returns {Promise<Array<Timecard>>} - A promise that resolves to an array of timecards created in the current month.
  */
-timecardSchema.static('getThisMonths', async function () {
-  const timecards = await model('Timecard')
-    .find({ createdAt: { $gte: moment().startOf('month') } })
-    .sort('empName')
-  return timecards
-})
+timecardSchema.static("getThisMonths", async () => {
+	const timecards = await model("Timecard")
+		.find({ createdAt: { $gte: moment().startOf("month") } })
+		.sort("empName");
+	return timecards;
+});
 
 /**
  * Retrieves all timecards created in the current year.
@@ -138,21 +138,21 @@ timecardSchema.static('getThisMonths', async function () {
  * @param {User} user - The user object.
  * @returns {Promise<Array<Timecard>>} - A promise that resolves to an array of timecards created in the current year.
  */
-timecardSchema.static('getThisYears', async function (user) {
-  if (user.role === 'Admin') {
-    const timecards = await model('Timecard')
-      .find({ createdAt: { $gte: moment().startOf('year') } })
-      .sort('empName')
-    return timecards
-  } else {
-    const timecards = await model('Timecard')
-      .find({ createdAt: { $gte: moment().startOf('year') } })
-      .where('sourceURL')
-      .equals(`time.${user.company.rootDomain}`)
-      .sort('empName')
-    return timecards
-  }
-})
+timecardSchema.static("getThisYears", async (user) => {
+	if (user.role === "Admin") {
+		const timecards = await model("Timecard")
+			.find({ createdAt: { $gte: moment().startOf("year") } })
+			.sort("empName");
+		return timecards;
+	} else {
+		const timecards = await model("Timecard")
+			.find({ createdAt: { $gte: moment().startOf("year") } })
+			.where("sourceURL")
+			.equals(`time.${user.company.rootDomain}`)
+			.sort("empName");
+		return timecards;
+	}
+});
 
 /**
  * Retrieves all timecards created in the last 12 months.
@@ -163,21 +163,21 @@ timecardSchema.static('getThisYears', async function (user) {
  * @param {User} user - The user object.
  * @returns {Promise<Array<Timecard>>} - A promise that resolves to an array of timecards created in the last 12 months.
  */
-timecardSchema.static('getLast12Mo', async function (user) {
-  if (user.role === 'Admin') {
-    const timecards = await model('Timecard')
-      .find({ createdAt: { $gte: moment().subtract('1', 'year') } })
-      .sort('empName')
-    return timecards
-  } else {
-    const timecards = await model('Timecard')
-      .find({ createdAt: { $gte: moment().subtract('1', 'year') } })
-      .where('sourceURL')
-      .equals(`time.${user.company.rootDomain}`)
-      .sort('empName')
-    return timecards
-  }
-})
+timecardSchema.static("getLast12Mo", async (user) => {
+	if (user.role === "Admin") {
+		const timecards = await model("Timecard")
+			.find({ createdAt: { $gte: moment().subtract("1", "year") } })
+			.sort("empName");
+		return timecards;
+	} else {
+		const timecards = await model("Timecard")
+			.find({ createdAt: { $gte: moment().subtract("1", "year") } })
+			.where("sourceURL")
+			.equals(`time.${user.company.rootDomain}`)
+			.sort("empName");
+		return timecards;
+	}
+});
 
 /**
  * Deletes all timecards with employee names containing "test" (case-insensitive).
@@ -185,11 +185,11 @@ timecardSchema.static('getLast12Mo', async function (user) {
  * @function deleteTestEntries
  * @returns {Promise<void>} - A promise that resolves when the deletion is complete.
  */
-timecardSchema.static('deleteTestEntries', async function () {
-  await model('Timecard').deleteMany({
-    empName: { $regex: /test/, $options: 'i' },
-  })
-})
+timecardSchema.static("deleteTestEntries", async () => {
+	await model("Timecard").deleteMany({
+		empName: { $regex: /test/, $options: "i" },
+	});
+});
 
-const Timecard = model('Timecard', timecardSchema, 'timecards')
-export default Timecard
+const Timecard = model("Timecard", timecardSchema, "timecards");
+export default Timecard;

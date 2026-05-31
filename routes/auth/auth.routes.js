@@ -1,14 +1,14 @@
-import { GET_authLogin, GET_authRegister } from '../../controllers/auth.js'
 import { Router } from 'express'
+import passport from 'passport'
+import { GET_authLogin, GET_authRegister } from '../../controllers/auth.js'
 import {
-  login,
-  registerUser,
-  logout,
-  submitResetPasswordRequest,
   executeResetPasswordRequest,
+  login,
+  logout,
+  registerUser,
+  submitResetPasswordRequest,
   verifyResetPasswordRequest,
 } from '../../middleware/auth.js'
-import passport from 'passport'
 
 /**
  * Express router for handling authentication routes.
@@ -38,7 +38,7 @@ authRouter.post(
     failureMessage: true,
     failureFlash: true,
   }),
-  function (req, res) {
+  (req, res) => {
     res.user = req.user
     res.redirect('/admin')
   }
