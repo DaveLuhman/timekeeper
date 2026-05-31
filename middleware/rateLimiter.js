@@ -1,5 +1,6 @@
 import Customer from '../models/customer.js'
 import Timecard from '../models/timecard.js'
+// biome-ignore lint/suspicious/noShadowRestrictedNames: <explanation>
 import { Error } from 'mongoose' // Add the missing import statement for the Error class
 
 
@@ -8,10 +9,11 @@ function getRootDomain(url) {
 }
 function confirmTimeSubdomain(hostname) {
   try {
-    if (hostname.substring(0, 5) !== 'time.')
+    if (hostname.substring(0, 5) !== 'time.') {
       return new Error(
         'Invalid Source. Requests must come from time.domain.tld URL'
       )
+    }
     return
   } catch (err) {
     return err.message
@@ -28,10 +30,9 @@ async function getThisMonthsEntriesBySourceURL(hostname) {
   // gets this months entries and filters them by the hostname
   try {
     const entries = await Timecard.getThisMonths()
-    const filteredEntries = entries.filter((entry) => {
-      return entry.sourceURL === hostname
-    })
-    return filteredEntries
+    return entries.filter((entry) => {
+          return entry.sourceURL === hostname
+        });
   } catch (err) {
     return err.message
   }
@@ -72,7 +73,7 @@ async function identifyOrCreateCustomer(hostname) {
  * @returns {Promise<void>} A promise that resolves with no value.
  */
 async function checkEntriesCountAgainstPaymentTier(customer, hostname) {
-  let entriesLimit = new Number()
+  let entriesLimit = Number()
   const entries = await getThisMonthsEntriesBySourceURL(hostname)
   console.log(
     `${JSON.stringify(customer)} has submitted ${
@@ -91,10 +92,11 @@ async function checkEntriesCountAgainstPaymentTier(customer, hostname) {
       //no limit, just here to catch this case
       break
   }
-  if (entriesLimit <= entries.length)
+  if (entriesLimit <= entries.length) {
     throw new Error(
       'You have exceeded your entry limit for this calendar month.'
     )
+  }
   return
 }
 

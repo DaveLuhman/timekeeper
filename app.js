@@ -2,15 +2,14 @@
 // eslint-disable-next-line no-unused-vars
 import  '@colors/colors'
 import 'dotenv/config'
-import { scheduledTasks } from './automation/cron.js';
 // express depenancies
 import cookieParser from 'cookie-parser';
 import express from 'express';
 // handlebars depenancies
 import { create } from 'express-handlebars'; // templating engine
-import handlebarsHelpers from 'handlebars-helpers';
 import paginate from 'handlebars-paginate';
 import { formatDate } from './helpers/index.js';
+import { handlebarsHelpers } from './helpers/handlebars.js';
 // utility depenancies
 import { mw, rateLimiter } from './middleware/util.js';
 import flash from 'express-flash';
@@ -27,7 +26,6 @@ import passportConfig from './config/passport.js';
 import passport from 'passport'
 connectDB()
 
-scheduledTasks()
 const PORT = process.env.PORT || 3000;
 const app = express(); // Create Express App
 app.use(cookieParser());
@@ -57,7 +55,7 @@ const hbs = create({
   helpers: {
     formatDate,
     paginate,
-    ...handlebarsHelpers()
+    ...handlebarsHelpers
   },
   extname: '.hbs',
   defaultLayout: 'main',
