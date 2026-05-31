@@ -44,6 +44,13 @@ function determineWeekNumber(week) {
   } else if (week === 1) return 52
   else return Number(week)
 }
+
+function determineYearNumber(year) {
+  if (year === undefined) {
+    return moment().year()
+  } else return Number(year)
+}
+
 /**
  * Handles the GET request for the admin dashboard.
  *
@@ -53,9 +60,10 @@ function determineWeekNumber(week) {
  */
 export async function GET_admin(req, res) {
   const targetOrThisWeek = determineWeekNumber(req.query.week)
+  const targetOrThisYear = determineYearNumber(req.query.year)
   const timecards = await Timecard.getLast12Mo(req.user)
   let filteredTimecards = timecards.filter((timecard) => {
-    return timecard.week == targetOrThisWeek
+    return timecard.week == targetOrThisWeek && timecard.year == targetOrThisYear
   })
   const {
     trimmedData: finalTimecards,
@@ -64,7 +72,13 @@ export async function GET_admin(req, res) {
   } = paginate(filteredTimecards, req.query.p || 1, 10)
   res.locals.pagination = { page, pageCount }
   res.locals.week = targetOrThisWeek
+  res.locals.year = targetOrThisYear
   res.locals.weeks = getPopulatedWeeks(timecards)
+  const years = new Set()
+  timecards.forEach((timecard) => {
+    years.add(timecard.year)
+  })
+  res.locals.years = Array.from(years).sort((a, b) => b - a)
   res.locals.totalTimecardCount = filteredTimecards.length
   res.locals.timecards = finalTimecards
   if (process.env.NODE_ENV == 'DEVELOPMENT') {

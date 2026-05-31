@@ -71,6 +71,10 @@ timecardSchema.virtual("week").get(function () {
 	return moment(this.timeEntries[0].date).locale("US").week();
 });
 
+timecardSchema.virtual("year").get(function () {
+	return moment(this.timeEntries[0].date).year();
+});
+
 /**
  * Retrieves all timecards created today.
  * @async
