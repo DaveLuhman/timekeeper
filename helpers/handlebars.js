@@ -43,4 +43,8 @@ export const handlebarsHelpers = {
     if (!value) return ''
     return moment(value).format(String(format ?? ''))
   },
+  date(value, format) {
+    if (!value) return ''
+    return moment(value).format(String(format ?? ''))
+  },
 }
