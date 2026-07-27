@@ -1,3 +1,4 @@
+// Monthly submission quota per company subdomain — not HTTP throttling.
 import Customer from '../models/customer.js'
 import Timecard from '../models/timecard.js'
 import { Error } from 'mongoose' // Add the missing import statement for the Error class

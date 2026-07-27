@@ -1,6 +1,7 @@
 /*
 List of Functions in order (* at beginning means exported)
-*rateLimiter
+*globalRateLimiter
+*authRateLimiter
 *getPackageVersion
 *weeklyDayShift
 */
@@ -33,22 +34,40 @@ export function paginate(data, targetPage, perPage) {
   )
   return { trimmedData, targetPage, pageCount }
 }
+function fingerprintKey(req) {
+  return req.fingerprintId ?? req.ip
+}
+
+function isStaticAsset(path) {
+  return (
+    /\.(css|js|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|map)$/i.test(path) ||
+    path.startsWith('/css/') ||
+    path.startsWith('/js/')
+  )
+}
+
 /**
- * Middleware function that applies rate limiting to incoming requests.
- *
- * @function rateLimiter
- * @param {Object} options - The rate limiting options.
- * @param {number} options.windowMs - The time window in milliseconds.
- * @param {number} options.max - The maximum number of requests allowed per window.
- * @param {boolean} options.standardHeaders - Whether to return rate limit info in the `RateLimit-*` headers.
- * @param {boolean} options.legacyHeaders - Whether to disable the `X-RateLimit-*` headers.
- * @returns {Function} - The rate limiting middleware function.
+ * Global HTTP throttle keyed by browser fingerprint (tk_fp cookie).
+ * Static assets are excluded so page loads do not exhaust shared IP buckets.
  */
-export const rateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+export const globalRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: fingerprintKey,
+  skip: (req) => isStaticAsset(req.path),
+})
+
+/**
+ * Stricter throttle for authentication routes to slow brute-force attempts.
+ */
+export const authRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: fingerprintKey,
 })
 
 /**

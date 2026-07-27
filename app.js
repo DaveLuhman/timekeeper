@@ -12,7 +12,8 @@ import handlebarsHelpers from 'handlebars-helpers';
 import paginate from 'handlebars-paginate';
 import { formatDate } from './helpers/index.js';
 // utility depenancies
-import { mw, rateLimiter } from './middleware/util.js';
+import { mw, globalRateLimiter, authRateLimiter } from './middleware/util.js';
+import { ensureFingerprint } from './middleware/fingerprint.js';
 import flash from 'express-flash';
 import connectDB from './config/db.js';
 import errorHandler from './middleware/error.js';
@@ -31,6 +32,7 @@ scheduledTasks()
 const PORT = process.env.PORT || 3000;
 const app = express(); // Create Express App
 app.use(cookieParser());
+app.use(ensureFingerprint);
 
 /** session config
  * conditional on process.env.NODE_ENV
@@ -75,14 +77,14 @@ app.set('views', './views');
 // Express Middleware
 app.use('/', express.static('./public')); // Serve Static Files
 app.use(express.json()); // JSON Body Parser
-app.use(rateLimiter);
+app.use(globalRateLimiter);
 app.use(flash())
 app.use(mw)
 // end express middleware
 // Routes (No User Context)
 app.use('/', indexRouter);
 app.use('/api', apiRouter)
-app.use('/auth', authRouter)
+app.use('/auth', authRateLimiter, authRouter)
 // Routes (User Context)
 app.use(checkAuth)
 app.use('/admin', adminRouter)
